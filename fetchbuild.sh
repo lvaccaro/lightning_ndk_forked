@@ -79,8 +79,8 @@ python3 -m virtualenv venv
 pip install -r requirements.txt
 
 # set standard cc for the configurator
-sed -i 's/$CC ${CWARNFLAGS-$BASE_WARNFLAGS} $CDEBUGFLAGS $COPTFLAGS -o $CONFIGURATOR $CONFIGURATOR.c/$CONFIGURATOR_CC ${CWARNFLAGS-$BASE_WARNFLAGS} $CDEBUGFLAGS $COPTFLAGS -o $CONFIGURATOR $CONFIGURATOR.c/g' configure
-sed -i 's/-Wno-maybe-uninitialized/-Wno-uninitialized/g' configure
+sed "s'$CC ${CWARNFLAGS-$BASE_WARNFLAGS} $CDEBUGFLAGS $COPTFLAGS -o $CONFIGURATOR $CONFIGURATOR.c'$CONFIGURATOR_CC ${CWARNFLAGS-$BASE_WARNFLAGS} $CDEBUGFLAGS $COPTFLAGS -o $CONFIGURATOR $CONFIGURATOR.c" configure
+sed "s'-Wno-maybe-uninitialized'-Wno-uninitialized" configure
 ./configure CONFIGURATOR_CC=${CONFIGURATOR_CC} --prefix=${LNBUILDROOT} --disable-developer --disable-compat --disable-valgrind --enable-static
 
 cp /repo/lightning-gen_header_versions.h gen_header_versions.h
