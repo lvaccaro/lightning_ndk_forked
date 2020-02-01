@@ -34,6 +34,11 @@ export MAKE_HOST=${target_host/v7a}
 export HOST=${target_host/v7a}
 export CONFIGURATOR_CC="/usr/bin/gcc"
 
+SED="sed"
+if [ "$(uname)" == "Darwin" ]; then
+    SED="gsed"
+fi
+
 NDKARCH=arm
 if [ "$target_host" = "i686-linux-android" ]; then
     NDKARCH=x86
@@ -79,14 +84,15 @@ python3 -m virtualenv venv
 pip install -r requirements.txt
 
 # set standard cc for the configurator
-sed "s'$CC ${CWARNFLAGS-$BASE_WARNFLAGS} $CDEBUGFLAGS $COPTFLAGS -o $CONFIGURATOR $CONFIGURATOR.c'$CONFIGURATOR_CC ${CWARNFLAGS-$BASE_WARNFLAGS} $CDEBUGFLAGS $COPTFLAGS -o $CONFIGURATOR $CONFIGURATOR.c" configure
-sed "s'-Wno-maybe-uninitialized'-Wno-uninitialized" configure
+${SED} -i 's/$CC ${CWARNFLAGS-$BASE_WARNFLAGS}/$CONFIGURATOR_CC ${CWARNFLAGS-$BASE_WARNFLAGS}/' configure
+${SED} -i "s'-Wno-maybe-uninitialized'-Wno-uninitialized'" configure
 ./configure CONFIGURATOR_CC=${CONFIGURATOR_CC} --prefix=${LNBUILDROOT} --disable-developer --disable-compat --disable-valgrind --enable-static
 
 cp /repo/lightning-gen_header_versions.h gen_header_versions.h
 # update arch based on toolchain
-sed "s'NDKCOMPILER'${CC}'" /repo/lightning-config.vars > config.vars
-sed "s'NDKCOMPILER'${CC}'" /repo/lightning-config.h > ccan/config.h
+${SED} "s'NDKCOMPILER'${CC}'" /repo/lightning-config.vars > config.vars
+${SED} "s'NDKCOMPILER'${CC}'" /repo/lightning-config.h > ccan/config.h
+${SED} -i "s'LNBUILDROOT'${LNBUILDROOT}'" config.vars
 
 # patch makefile
 patch -p1 < /repo/lightning-makefile.patch
