@@ -102,7 +102,7 @@ patch -p1 < /repo/lightning-endian.patch
 # build external libraries and source
 make PIE=1 DEVELOPER=0 || echo "continue"
 make clean -C ccan/ccan/cdump/tools
-make LDFLAGS="" CC="${CONFIGURATOR_CC}" LDLIBS="-L/usr/local/lib" -C ccan/ccan/cdump/tools
+make LDFLAGS="" CC="gcc" LDLIBS="-L/usr/local/lib" -C ccan/ccan/cdump/tools
 make PIE=1 DEVELOPER=0
 deactivate
 cd ..
